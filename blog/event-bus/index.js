@@ -1,25 +1,40 @@
 const express = require("express");
-const app = express();
+const bodyParser = require("body-parser");
 const axios = require("axios");
 
-app.use(express.json());
+const app = express();
+app.use(bodyParser.json());
 
-app.post("/events", (req, res, next) => {
+const events = [];
+
+app.get("/events", (req, res) => {
+  try {
+    res.send(events);
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+app.post("/events", (req, res) => {
   const event = req.body;
 
-  axios.post("http://loclahost:4000", event).catch((err) => {
-    console.log(err);
-  });
-  axios.post("http://loclahost:4001", event).catch((err) => {
-    console.log(err);
-  });
-  axios.post("http://loclahost:4002", event).catch((err) => {
-    console.log(err);
-  });
+  events.push(event);
 
-  res.json({ status: "OK", event });
+  axios.post("http://localhost:4000/events", event).catch((err) => {
+    console.log(err.message);
+  });
+  axios.post("http://localhost:4001/events", event).catch((err) => {
+    console.log(err.message);
+  });
+  axios.post("http://localhost:4002/events", event).catch((err) => {
+    console.log(err.message);
+  });
+  axios.post("http://localhost:4003/events", event).catch((err) => {
+    console.log(err.message);
+  });
+  res.send({ status: "OK" });
 });
 
 app.listen(4005, () => {
-  console.log("Serving Event Bus service on Port 4005");
+  console.log("Listening on 4005");
 });
